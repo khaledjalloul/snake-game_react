@@ -6,6 +6,7 @@
 body{
     margin-top: 5px;
     margin-bottom: 5px;
+    background-color: rgba(23, 168, 59, 0.301);
 }
 
 .center{
@@ -16,6 +17,7 @@ body{
     border: solid;
     border-color: black;
     border-width:2px;
+    cursor: none;
 }
 .square{
     border: solid;
@@ -35,14 +37,6 @@ body{
     font-family: 'Plaguard';
 }
 
-#snakeLength{
-    color: darkgreen;
-}
-
-#applesCaught{
-    color: darkred
-}
-
 .gameResult{
     position: fixed;
     top: 50%;
@@ -53,3 +47,31 @@ body{
     text-align: center;
 }
 
+.buttonDiv{
+    display: flex;
+    justify-content: center;
+}
+
+#enableDisableWalls{
+    color: black;
+    font-family: 'Plaguard';
+    font-size: 16px;
+    height: 40px;
+    width: 70%;
+    border: none;
+    box-shadow: 4px 4px 3px 3px rgba(0, 0, 0, 0.4);
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition-duration: 0.3s;
+}
+
+#enableDisableWalls:hover{
+    transition-duration: 0.3s;
+    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.4);
+}
+
+#enableDisableWalls:disabled{
+    transition-duration: 0.3s;
+    box-shadow: None;
+    cursor: default;
+}
