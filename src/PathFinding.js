@@ -1,30 +1,46 @@
 import './style.css';
 import React from 'react';
-import { findByPlaceholderText } from '@testing-library/react';
 
-function Square(props) {
-  const color = props.id === props.blocks.start ? "blue" : props.id === props.blocks.end ? "red" : "rgba(255,255,255,0.4)";
-  return (
-    <div className="square" style={{ backgroundColor: color }}></div>
-  )
-}
-
-class Tile{
-  Tile(id){
-    this.id = id
-    this.g = 0
-    this.h = 0
-    this.f = 0
+class Coords {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+    this.f = 30*30
+    this.parent = null
+    this.neighbors = []
   }
+
+  sameCoordsAs(a) {
+    if (this.x === a.x && this.y === a.y) return true
+    else return false
+  }
+
+  isInList(list) {
+    var result = list.map((Coords) => {
+      if (this.sameCoordsAs(Coords)) {
+        return true
+      }
+      return false
+    })
+    if (result.indexOf(true) > -1) return true
+    return false
+  }
+}
+function Square(props) {
+  const color = props.coords.sameCoordsAs(props.blocks.start) ? "blue" : props.coords.sameCoordsAs(props.blocks.end) ? "red" : props.coords.isInList(props.blocks.obstacles) ? "black" : props.coords.isInList(props.blocks.path) ? "green" : "rgba(255,255,255,0.4)";
+  return (
+    <div className="square" style={{ backgroundColor: color, fontSize: '8px'}}>{props.coords.x + ", " + props.coords.y}</div>
+  )
 }
 
 class PathFinding extends React.Component {
   constructor(props) {
     super(props)
     this.state = {
-      start: 72,
-      end: 491,
-      obstacles: []
+      start: new Coords(23, 7),
+      end: new Coords(8, 22),
+      obstacles: [new Coords(20, 5), new Coords(20, 6), new Coords(20, 7), new Coords(20, 8), new Coords(20, 9), new Coords(20, 10), new Coords(21, 5), new Coords(22, 5), new Coords(23, 5), new Coords(24, 5), new Coords(25, 5)],
+      path: []
     }
     this.handleKeys = this.handleKeys.bind(this)
     this.findPath = this.findPath.bind(this)
@@ -40,32 +56,49 @@ class PathFinding extends React.Component {
     document.body.addEventListener('keydown', this.handleKeys)
   }
   
-  findPath(){
+  async findPath(){
     var open = []
     var closed = []
-    var isNotFound = true
-    var current
-    var neighbors = []
-    open.push(Tile(this.state.start))
-    while (isNotFound){
-      open.sort((a, b) => a.id - b.id)
-      current = open.pop(0)
+    var targetFound = false
+    var current, new_g, new_h, new_f
+    open.push(this.state.start)
+    while (!targetFound){
+      open.sort((a, b) => a.f - b.f)
+      current = open[0]
+      open = open.slice(1)
       closed.push(current)
 
-      if (current.id === this.state.end){
-        return
-      }
-      neighbors = []
-      if (current % 30 !== 29) neighbors.push(Tile(current.id+1))
-      if (current % 30 !== 0) neighbors.push(Tile(current.id-1))
-      if (current < 30) neighbors.push(Tile(current.id-30))
-      if (current >= 870 && current < 900) neighbors.push(Tile(current.id+30))
+      if (current.sameCoordsAs(this.state.end)) targetFound = true
 
-      neighbors = neighbors.map((tile) => {
-        if (this.state.obstacles.indexOf(tile.id) > -1 || closed.indexOf(tile.id) > -1) return
+      if (current.x !== 0) current.neighbors.push(new Coords(current.x - 1, current.y))
+      if (current.x !== 29) current.neighbors.push(new Coords(current.x + 1, current.y))
+      if (current.y !== 0) current.neighbors.push(new Coords(current.x, current.y + 1))
+      if (current.x !== 29) current.neighbors.push(new Coords(current.x, current.y - 1))
 
-        if (this.state.obstacles.indexOf(tile.id) === -1){}
+      current.neighbors = current.neighbors.map((neighbor) => {
+        if (neighbor.isInList(this.state.obstacles) || neighbor.isInList(closed)) return
+
+        new_g = Math.abs(neighbor.x - this.state.start.x) + Math.abs(neighbor.y - this.state.start.y)
+        new_h = Math.abs(neighbor.x - this.state.end.x) + Math.abs(neighbor.y - this.state.end.y)
+        new_f = new_g + new_h
+        if (new_f < neighbor.f || !neighbor.isInList(open)){
+          neighbor.f = new_f
+          neighbor.parent = current
+
+          if (!neighbor.isInList(open)){
+            open.push(neighbor)
+          }
+        }
       })
+    }
+
+    var colorChange = closed[closed.length-1]
+    while(colorChange.parent !== null){
+      var path = this.state.path.slice().concat(colorChange)
+      this.setState({
+        path: path
+      })
+      colorChange = colorChange.parent
     }
   }
 
@@ -75,7 +108,7 @@ class PathFinding extends React.Component {
     for (var i = 0; i < 30; i++) {
       rows = []
       for (var j = 0; j < 30; j++) {
-        rows.push(<Square blocks={this.state} id={Number(i * 30 + j)}></Square>)
+        rows.push(<Square blocks={this.state} coords={new Coords(j, i)}></Square>)
       }
       columns.push(<div style={{ display: 'flex', flexDirection: 'row wrap' }}>{rows}</div>)
     }
