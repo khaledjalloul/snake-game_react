@@ -5,6 +5,9 @@ class Coords {
   constructor(x, y) {
     this.x = x
     this.y = y
+    this.f = 30 * 30
+    this.parent = null
+    this.neighbors = []
   }
 
   sameCoordsAs(a) {
@@ -43,6 +46,7 @@ class SnakeGame extends React.Component {
       applesCaught: 0,
       gameFinished: false,
       gamePaused: false,
+      path: []
     }
     this.state = {
       gameStarted: false,
@@ -53,11 +57,14 @@ class SnakeGame extends React.Component {
       applesCaught: 0,
       gameFinished: false,
       gamePaused: false,
+      path: [],
       walls: false
     }
     this.handleKeys = this.handleKeys.bind(this)
     this.handleButtons = this.handleButtons.bind(this)
     this.autoMovement = this.autoMovement.bind(this)
+    this.findPath = this.findPath.bind(this)
+    this.autoMoveSolver = this.autoMoveSolver.bind(this)
   }
 
   handleKeys(event) {
@@ -78,6 +85,9 @@ class SnakeGame extends React.Component {
       this.setState({
         gamePaused: true
       })
+    }
+    if (event.key === "f") {
+      this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
     }
     var direction = "No change"
     var snakeBody = this.state.snakeBody.slice()
@@ -164,6 +174,90 @@ class SnakeGame extends React.Component {
         speed: speed
       })
     }
+  }
+
+  findPath(start, end, obstacles) {
+    var open = []
+    var closed = []
+    var targetFound = false
+    var current, new_g, new_h, new_f
+    open.push(start)
+    while (!targetFound) {
+      open.sort((a, b) => a.f - b.f)
+      current = open[0]
+      open = open.slice(1)
+      closed.push(current)
+
+      if (current.sameCoordsAs(end)) targetFound = true
+      current.neighbors = []
+      if (current.x !== 0) current.neighbors.push(new Coords(current.x - 1, current.y))
+      if (current.x !== 29) current.neighbors.push(new Coords(current.x + 1, current.y))
+      if (current.y !== 0) current.neighbors.push(new Coords(current.x, current.y - 1))
+      if (current.y !== 29) current.neighbors.push(new Coords(current.x, current.y + 1))
+      
+      current.neighbors = current.neighbors.map((neighbor) => {
+        if (neighbor.isInList(obstacles) || neighbor.isInList(closed)) return neighbor
+
+        new_g = Math.abs(neighbor.x - start.x) + Math.abs(neighbor.y - start.y)
+        new_h = Math.abs(neighbor.x - end.x) + Math.abs(neighbor.y - end.y)
+        new_f = new_g + new_h
+        if (new_f < neighbor.f || !neighbor.isInList(open)) {
+          neighbor.f = new_f
+          neighbor.parent = current
+
+          if (!neighbor.isInList(open)) {
+            open.push(neighbor)
+          }
+        }
+        return neighbor
+      })
+    }
+
+    var path = []
+    var pathBlock = closed[closed.length - 1]
+    while (pathBlock.parent !== null) {
+      path = this.state.path.slice().concat(pathBlock)
+      this.setState({
+        path: path,
+        speed: 34
+      })
+      pathBlock = pathBlock.parent
+    }
+    this.autoPathFollow = setInterval(() => this.autoMoveSolver(), this.state.speed);
+  }
+
+  autoMoveSolver() {
+    var snakeBody = this.state.snakeBody.slice()
+    var path = this.state.path.slice()
+    var newBlock = path.pop()
+    var appleLocation = this.state.appleLocation
+    var applesCaught = this.state.applesCaught
+    var findNewPath = false
+    snakeBody = snakeBody.concat(newBlock)
+    console.log(newBlock)
+    if (newBlock.sameCoordsAs(appleLocation)) {
+      findNewPath = true
+      applesCaught += 1
+      do {
+        var newX = Math.floor(Math.random() * 30)
+        var newY = Math.floor(Math.random() * 30)
+        appleLocation = new Coords(newX, newY)
+      } while (appleLocation.isInList(snakeBody))
+    } else {
+      snakeBody = snakeBody.slice(1)
+    }
+    this.setState({
+      snakeBody: snakeBody,
+      path: path,
+      appleLocation: appleLocation,
+      applesCaught: applesCaught
+    })
+    if (findNewPath){
+      snakeBody[snakeBody.length - 1].parent = null
+      clearInterval(this.autoPathFollow)
+      this.findPath(snakeBody[snakeBody.length - 1], appleLocation, snakeBody.slice(0, snakeBody.length - 1))
+    }
+
   }
 
   componentDidMount() {

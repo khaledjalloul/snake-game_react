@@ -27,7 +27,7 @@ class Coords {
   }
 }
 function Square(props) {
-  const color = props.coords.sameCoordsAs(props.blocks.start) ? "blue" : props.coords.sameCoordsAs(props.blocks.end) ? "red" : props.coords.isInList(props.blocks.obstacles) ? "black" : props.coords.isInList(props.blocks.path) ? "green" : "rgba(255,255,255,0.4)";
+  const color = props.coords.sameCoordsAs(props.blocks.start) ? "blue" : props.coords.sameCoordsAs(props.blocks.end) ? "red" : props.coords.isInList(props.blocks.path) ? "green" : props.coords.isInList(props.blocks.open) ? "grey" :  props.coords.isInList(props.blocks.closed) ? "pink" : props.coords.isInList(props.blocks.obstacles) ? "black" : "rgba(255,255,255,0.4)";
   return (
     <div className="square" style={{ backgroundColor: color, fontSize: '8px'}}>{props.coords.x + ", " + props.coords.y}</div>
   )
@@ -39,8 +39,10 @@ class PathFinding extends React.Component {
     this.state = {
       start: new Coords(23, 7),
       end: new Coords(8, 22),
-      obstacles: [new Coords(20, 5), new Coords(20, 6), new Coords(20, 7), new Coords(20, 8), new Coords(20, 9), new Coords(20, 10), new Coords(21, 5), new Coords(22, 5), new Coords(23, 5), new Coords(24, 5), new Coords(25, 5)],
-      path: []
+      obstacles: [new Coords(20, 5), new Coords(20, 6), new Coords(20, 7), new Coords(20, 8), new Coords(20, 9), new Coords(20, 10), new Coords(21, 11), new Coords(22, 11), new Coords(23, 11), new Coords(24, 11), new Coords(25, 11)],
+      path: [],
+      open: [],
+      closed: []
     }
     this.handleKeys = this.handleKeys.bind(this)
     this.findPath = this.findPath.bind(this)
@@ -57,12 +59,20 @@ class PathFinding extends React.Component {
   }
   
   async findPath(){
+    const sleep = (milliseconds) => {
+      return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
     var open = []
     var closed = []
     var targetFound = false
     var current, new_g, new_h, new_f
     open.push(this.state.start)
     while (!targetFound){
+      await sleep(1)
+      this.setState({
+        open: open,
+        closed: closed
+      })
       open.sort((a, b) => a.f - b.f)
       current = open[0]
       open = open.slice(1)
@@ -72,8 +82,8 @@ class PathFinding extends React.Component {
 
       if (current.x !== 0) current.neighbors.push(new Coords(current.x - 1, current.y))
       if (current.x !== 29) current.neighbors.push(new Coords(current.x + 1, current.y))
-      if (current.y !== 0) current.neighbors.push(new Coords(current.x, current.y + 1))
-      if (current.x !== 29) current.neighbors.push(new Coords(current.x, current.y - 1))
+      if (current.y !== 0) current.neighbors.push(new Coords(current.x, current.y - 1))
+      if (current.y !== 29) current.neighbors.push(new Coords(current.x, current.y + 1))
 
       current.neighbors = current.neighbors.map((neighbor) => {
         if (neighbor.isInList(this.state.obstacles) || neighbor.isInList(closed)) return
@@ -94,6 +104,7 @@ class PathFinding extends React.Component {
 
     var colorChange = closed[closed.length-1]
     while(colorChange.parent !== null){
+      await sleep(1)
       var path = this.state.path.slice().concat(colorChange)
       this.setState({
         path: path
