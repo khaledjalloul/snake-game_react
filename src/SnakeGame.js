@@ -1,5 +1,6 @@
 import './style.css';
 import React from 'react';
+import PathFinding from './PathFinding';
 
 class Coords {
   constructor(x, y) {
@@ -46,6 +47,7 @@ class SnakeGame extends React.Component {
       applesCaught: 0,
       gameFinished: false,
       gamePaused: false,
+      autoMove: false,
       path: []
     }
     this.state = {
@@ -57,6 +59,7 @@ class SnakeGame extends React.Component {
       applesCaught: 0,
       gameFinished: false,
       gamePaused: false,
+      autoMove: false,
       path: [],
       walls: false
     }
@@ -77,17 +80,16 @@ class SnakeGame extends React.Component {
         this.setState({
           gamePaused: false
         })
-        this.autoMoveSnake = setInterval(() => this.autoMovement(), this.state.speed);
+        if (this.state.autoMove) this.autoPathFollow = setInterval(() => this.autoMoveSolver(), this.state.speed);
+        else this.autoMoveSnake = setInterval(() => this.autoMovement(), this.state.speed);
       }
     }
     if (event.key === "Escape") {
-      clearInterval(this.autoMoveSnake)
+      if (this.state.autoMove) clearInterval(this.autoPathFollow)
+      else clearInterval(this.autoMoveSnake)
       this.setState({
         gamePaused: true
       })
-    }
-    if (event.key === "f") {
-      this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
     }
     var direction = "No change"
     var snakeBody = this.state.snakeBody.slice()
@@ -109,6 +111,15 @@ class SnakeGame extends React.Component {
       this.setState({
         walls: !this.state.walls
       })
+    }
+    else if (event.target.id === "autoSolveButton" && !this.state.gamePaused) {
+      if (this.state.gameStarted) {
+        if (!this.state.autoMove) {
+          clearInterval(this.autoMoveSnake)
+          this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
+        }
+      }
+      else this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
     }
   }
 
@@ -187,14 +198,21 @@ class SnakeGame extends React.Component {
       current = open[0]
       open = open.slice(1)
       closed.push(current)
-
       if (current.sameCoordsAs(end)) targetFound = true
+      try {
+      } catch (e) {
+        if (e instanceof TypeError) {
+          this.setState({
+            gameFinished: true
+          })
+        }
+      }
       current.neighbors = []
       if (current.x !== 0) current.neighbors.push(new Coords(current.x - 1, current.y))
       if (current.x !== 29) current.neighbors.push(new Coords(current.x + 1, current.y))
       if (current.y !== 0) current.neighbors.push(new Coords(current.x, current.y - 1))
       if (current.y !== 29) current.neighbors.push(new Coords(current.x, current.y + 1))
-      
+
       current.neighbors = current.neighbors.map((neighbor) => {
         if (neighbor.isInList(obstacles) || neighbor.isInList(closed)) return neighbor
 
@@ -215,15 +233,18 @@ class SnakeGame extends React.Component {
 
     var path = []
     var pathBlock = closed[closed.length - 1]
+    var speed = 34
     while (pathBlock.parent !== null) {
-      path = this.state.path.slice().concat(pathBlock)
-      this.setState({
-        path: path,
-        speed: 34
-      })
+      path = path.concat(pathBlock)
       pathBlock = pathBlock.parent
     }
-    this.autoPathFollow = setInterval(() => this.autoMoveSolver(), this.state.speed);
+    this.setState({
+      path: path,
+      speed: speed,
+      gameStarted: true,
+      autoMove: true
+    })
+    this.autoPathFollow = setInterval(() => this.autoMoveSolver(), speed);
   }
 
   autoMoveSolver() {
@@ -234,7 +255,6 @@ class SnakeGame extends React.Component {
     var applesCaught = this.state.applesCaught
     var findNewPath = false
     snakeBody = snakeBody.concat(newBlock)
-    console.log(newBlock)
     if (newBlock.sameCoordsAs(appleLocation)) {
       findNewPath = true
       applesCaught += 1
@@ -252,7 +272,7 @@ class SnakeGame extends React.Component {
       appleLocation: appleLocation,
       applesCaught: applesCaught
     })
-    if (findNewPath){
+    if (findNewPath) {
       snakeBody[snakeBody.length - 1].parent = null
       clearInterval(this.autoPathFollow)
       this.findPath(snakeBody[snakeBody.length - 1], appleLocation, snakeBody.slice(0, snakeBody.length - 1))
@@ -280,6 +300,8 @@ class SnakeGame extends React.Component {
         <div className="info">
           <div className='buttonDiv'>
             <input id="enableDisableWalls" type="button" value={this.state.walls ? "Disable Walls" : "Enable Walls"} onClick={this.handleButtons} disabled={this.state.gameStarted && !this.state.gameFinished} style={this.state.gameStarted && !this.state.gameFinished ? { backgroundColor: 'rgb(150, 150, 150)' } : this.state.walls ? { backgroundColor: 'rgba(211, 39, 16, 0.3)' } : { backgroundColor: 'rgba(16, 149, 211, 0.3)' }} />
+            <br />
+            <input id="autoSolveButton" type="button" value="Auto-solve" onClick={this.handleButtons} />
           </div>
           <p style={{ color: "darkGreen" }}>Snake Length: {this.state.snakeBody.length} squares.</p>
           <p style={{ color: "darkRed" }}>Apples Caught: {this.state.applesCaught}</p>
@@ -294,4 +316,36 @@ class SnakeGame extends React.Component {
   }
 }
 
-export default SnakeGame;
+
+class Board extends React.Component {
+  constructor() {
+    super()
+    this.state = {
+      display: <SnakeGame />
+    }
+    this.handleKeys = this.handleKeys.bind(this)
+  }
+  handleKeys(event) {
+    if (event.key === "f") {
+      this.setState({
+        display: <PathFinding />
+      })
+    } else if (event.key === "s") {
+      this.setState({
+        display: <SnakeGame />
+      })
+    }
+
+  }
+  componentDidMount() {
+    document.body.addEventListener('keydown', this.handleKeys)
+  }
+  render() {
+    return (this.state.display);
+  }
+}
+
+export {
+  SnakeGame,
+  Board
+}
