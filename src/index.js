@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import Board from './Board.js';
+import PathFinding from './PathFinding.js';
+import SnakeGame from './SnakeGame.js';
 
 ReactDOM.render(
-    <Board />,
+    <SnakeGame />,
   document.getElementById('root')
 );

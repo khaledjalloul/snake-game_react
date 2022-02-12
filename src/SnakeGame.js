@@ -1,22 +1,44 @@
 import './style.css';
 import React from 'react';
 
+class Coords {
+  constructor(x, y) {
+    this.x = x
+    this.y = y
+  }
+
+  sameCoordsAs(a) {
+    if (this.x === a.x && this.y === a.y) return true
+    else return false
+  }
+
+  isInList(list) {
+    var result = list.map((tile) => {
+      if (this.sameCoordsAs(tile)) {
+        return true
+      }
+      return false
+    })
+    if (result.indexOf(true) > -1) return true
+    return false
+  }
+}
 function Square(props) {
-  const color = props.id === props.apple ? "red" : props.id === props.list[props.list.length - 1] ? "grey" :
-    props.list.indexOf(props.id) > -1 ? "darkGreen" : "rgba(255,255,255,0.4)";
+  const color = props.coords.sameCoordsAs(props.apple) ? "red" : props.coords.sameCoordsAs(props.list[props.list.length - 1]) ? "grey" : props.coords.isInList(props.list) ? "darkGreen" : "rgba(255,255,255,0.4)";
   return (
     <div className="square" style={{ backgroundColor: color }}></div>
   )
+
 }
 
-class Board extends React.Component {
+class SnakeGame extends React.Component {
   constructor(props) {
     super(props)
     this.initialState = {
       gameStarted: true,
       speed: 80,
-      appleLocation: 437,
-      snakeBody: [0, 1, 2, 3, 4, 5],
+      appleLocation: new Coords(17, 14),
+      snakeBody: [new Coords(0, 0), new Coords(1, 0), new Coords(2, 0), new Coords(3, 0), new Coords(4, 0), new Coords(5, 0)],
       direction: "Right",
       applesCaught: 0,
       gameFinished: false,
@@ -25,8 +47,8 @@ class Board extends React.Component {
     this.state = {
       gameStarted: false,
       speed: 80,
-      appleLocation: 437,
-      snakeBody: [0, 1, 2, 3, 4, 5],
+      appleLocation: new Coords(17, 14),
+      snakeBody: [new Coords(0, 0), new Coords(1, 0), new Coords(2, 0), new Coords(3, 0), new Coords(4, 0), new Coords(5, 0)],
       direction: "Right",
       applesCaught: 0,
       gameFinished: false,
@@ -60,10 +82,10 @@ class Board extends React.Component {
     var direction = "No change"
     var snakeBody = this.state.snakeBody.slice()
     if (!this.state.gamePaused) {
-      if (event.key === "ArrowRight" && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] + 1 && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] - 29) direction = "Right"
-      else if (event.key === "ArrowLeft" && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] - 1 && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] + 29) direction = "Left"
-      else if (event.key === "ArrowUp" && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] - 30 && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] + 870) direction = "Up"
-      else if (event.key === "ArrowDown" && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] + 30 && snakeBody[snakeBody.length - 2] !== snakeBody[snakeBody.length - 1] - 870) direction = "Down"
+      if (event.key === "ArrowRight" && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x + 1 && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x - 29) direction = "Right"
+      else if (event.key === "ArrowLeft" && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x - 1 && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x + 29) direction = "Left"
+      else if (event.key === "ArrowUp" && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y - 30 && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y + 29) direction = "Up"
+      else if (event.key === "ArrowDown" && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y + 30 && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y - 29) direction = "Down"
     }
     if (direction !== "No change" && (event.key === "ArrowUp" || event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "ArrowLeft")) {
       this.setState({
@@ -86,39 +108,40 @@ class Board extends React.Component {
     var appleLocation = this.state.appleLocation
     var applesCaught = this.state.applesCaught
     var newBody
-    var change = 0
+    var change = new Coords(0, 0)
     var hitWall = false
     var speed = this.state.speed
 
     if (direction === "Right") {
-      if (this.state.walls && snakeBody[snakeBody.length - 1] % 30 === 29) hitWall = true
-      else if (!this.state.walls && snakeBody[snakeBody.length - 1] % 30 === 29) change = - 29
-      else change = 1
+      if (this.state.walls && snakeBody[snakeBody.length - 1].x === 29) hitWall = true
+      else if (!this.state.walls && snakeBody[snakeBody.length - 1].x === 29) change.x = - 29
+      else change.x = 1
     }
     else if (direction === "Left") {
-      if (this.state.walls && snakeBody[snakeBody.length - 1] % 30 === 0) hitWall = true
-      else if (!this.state.walls && snakeBody[snakeBody.length - 1] % 30 === 0) change = 29
-      else change = - 1
+      if (this.state.walls && snakeBody[snakeBody.length - 1].x === 0) hitWall = true
+      else if (!this.state.walls && snakeBody[snakeBody.length - 1].x === 0) change.x = 29
+      else change.x = - 1
     }
     else if (direction === "Up") {
-      if (this.state.walls && snakeBody[snakeBody.length - 1] < 30) hitWall = true
-      else if (!this.state.walls && snakeBody[snakeBody.length - 1] < 30) change = 870
-      else change = - 30
+      if (this.state.walls && snakeBody[snakeBody.length - 1].y === 0) hitWall = true
+      else if (!this.state.walls && snakeBody[snakeBody.length - 1].y === 0) change.y = 29
+      else change.y = - 1
     }
     else if (direction === "Down") {
-      if (this.state.walls && snakeBody[snakeBody.length - 1] >= 870 && snakeBody[snakeBody.length - 1] < 900) hitWall = true
-      else if (!this.state.walls && snakeBody[snakeBody.length - 1] >= 870 && snakeBody[snakeBody.length - 1] < 900) change = - 870
-      else change = 30
+      if (this.state.walls && snakeBody[snakeBody.length - 1].y === 29) hitWall = true
+      else if (!this.state.walls && snakeBody[snakeBody.length - 1].y === 29) change.y = - 29
+      else change.y = 1
     }
 
-    if (snakeBody.slice(0, snakeBody.length - 1).indexOf(snakeBody[snakeBody.length - 1] + change) > -1 || hitWall) {
+    var afterChange = new Coords(snakeBody[snakeBody.length - 1].x + change.x, snakeBody[snakeBody.length - 1].y + change.y)
+    if (afterChange.isInList(snakeBody.slice(0, snakeBody.length - 1)) || hitWall) {
       clearInterval(this.autoMoveSnake)
       this.setState({
         gameFinished: true
       })
     } else {
-      if (snakeBody[snakeBody.length - 1] + change === appleLocation) {
-        newBody = snakeBody.slice().concat([snakeBody[snakeBody.length - 1] + change])
+      if (afterChange.sameCoordsAs(appleLocation)) {
+        newBody = snakeBody.slice().concat([afterChange])
         applesCaught += 1
         if (speed !== 34) {
           speed -= 2
@@ -126,11 +149,13 @@ class Board extends React.Component {
           this.autoMoveSnake = setInterval(() => this.autoMovement(), this.state.speed);
         }
         do {
-          appleLocation = Math.floor(Math.random() * 900)
-        } while (newBody.indexOf(appleLocation) > -1)
+          var newX = Math.floor(Math.random() * 30)
+          var newY = Math.floor(Math.random() * 30)
+          appleLocation = new Coords(newX, newY)
+        } while (appleLocation.isInList(newBody))
       }
       else {
-        newBody = snakeBody.slice(1).concat([snakeBody[snakeBody.length - 1] + change])
+        newBody = snakeBody.slice(1).concat([afterChange])
       }
       this.setState({
         appleLocation: appleLocation,
@@ -151,7 +176,7 @@ class Board extends React.Component {
     for (var i = 0; i < 30; i++) {
       rows = []
       for (var j = 0; j < 30; j++) {
-        rows.push(<Square apple={this.state.appleLocation} list={this.state.snakeBody} id={Number(i * 30 + j)}></Square>)
+        rows.push(<Square apple={this.state.appleLocation} list={this.state.snakeBody} coords={new Coords(j, i)}></Square>)
       }
       columns.push(<div style={{ display: 'flex', flexDirection: 'row wrap' }}>{rows}</div>)
     }
@@ -175,4 +200,4 @@ class Board extends React.Component {
   }
 }
 
-export default Board;
+export default SnakeGame;
