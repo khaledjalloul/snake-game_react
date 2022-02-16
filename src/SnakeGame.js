@@ -96,8 +96,8 @@ class SnakeGame extends React.Component {
     if (!this.state.gamePaused) {
       if (event.key === "ArrowRight" && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x + 1 && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x - 29) direction = "Right"
       else if (event.key === "ArrowLeft" && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x - 1 && snakeBody[snakeBody.length - 2].x !== snakeBody[snakeBody.length - 1].x + 29) direction = "Left"
-      else if (event.key === "ArrowUp" && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y - 30 && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y + 29) direction = "Up"
-      else if (event.key === "ArrowDown" && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y + 30 && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y - 29) direction = "Down"
+      else if (event.key === "ArrowUp" && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y - 1 && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y + 29) direction = "Up"
+      else if (event.key === "ArrowDown" && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y + 1 && snakeBody[snakeBody.length - 2].y !== snakeBody[snakeBody.length - 1].y - 29) direction = "Down"
     }
     if (direction !== "No change" && (event.key === "ArrowUp" || event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "ArrowLeft")) {
       this.setState({
@@ -114,7 +114,10 @@ class SnakeGame extends React.Component {
     }
     else if (event.target.id === "autoSolveButton" && !this.state.gamePaused) {
       if (this.state.gameStarted) {
-        if (!this.state.autoMove) {
+        if (this.state.gameFinished){
+          this.setState(this.initialState)
+          this.findPath(this.initialState.snakeBody[this.state.snakeBody.length - 1], this.initialState.appleLocation, this.initialState.snakeBody.slice(0, this.initialState.snakeBody.length - 1))
+        } else if (!this.state.autoMove) {
           clearInterval(this.autoMoveSnake)
           this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
         }
