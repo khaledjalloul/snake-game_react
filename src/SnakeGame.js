@@ -1,38 +1,14 @@
 import './style.css';
 import React from 'react';
-import PathFinding from './PathFinding';
+import { WebTemplate, navBarElement } from './website-template/src/WebTemplate.js'
+import PathFinding from './PathFinding.js';
+import Coords from './Coords.js'
 
-class Coords {
-  constructor(x, y) {
-    this.x = x
-    this.y = y
-    this.f = 30 * 30
-    this.parent = null
-    this.neighbors = []
-  }
-
-  sameCoordsAs(a) {
-    if (this.x === a.x && this.y === a.y) return true
-    else return false
-  }
-
-  isInList(list) {
-    var result = list.map((tile) => {
-      if (this.sameCoordsAs(tile)) {
-        return true
-      }
-      return false
-    })
-    if (result.indexOf(true) > -1) return true
-    return false
-  }
-}
 function Square(props) {
   const color = props.coords.sameCoordsAs(props.apple) ? "red" : props.coords.sameCoordsAs(props.list[props.list.length - 1]) ? "grey" : props.coords.isInList(props.list) ? "darkGreen" : "rgba(255,255,255,0.4)";
   return (
     <div className="square" style={{ backgroundColor: color }}></div>
   )
-
 }
 
 class SnakeGame extends React.Component {
@@ -112,18 +88,6 @@ class SnakeGame extends React.Component {
       this.setState({
         walls: !this.state.walls
       })
-    }
-    else if (event.target.id === "autoSolveButton" && !this.state.gamePaused) {
-      if (this.state.gameStarted) {
-        if (this.state.gameFinished) {
-          this.setState(this.initialState)
-          this.findPath(this.initialState.snakeBody[this.state.snakeBody.length - 1], this.initialState.appleLocation, this.initialState.snakeBody.slice(0, this.initialState.snakeBody.length - 1))
-        } else if (!this.state.autoMove) {
-          clearInterval(this.autoMoveSnake)
-          this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
-        }
-      }
-      else this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
     }
   }
 
@@ -284,8 +248,26 @@ class SnakeGame extends React.Component {
 
   }
 
+  autoSolve = () => {
+    if (!this.state.gamePaused) {
+      if (this.state.gameStarted) {
+        if (this.state.gameFinished) {
+          this.setState(this.initialState)
+          this.findPath(this.initialState.snakeBody[this.state.snakeBody.length - 1], this.initialState.appleLocation, this.initialState.snakeBody.slice(0, this.initialState.snakeBody.length - 1))
+        } else if (!this.state.autoMove) {
+          clearInterval(this.autoMoveSnake)
+          this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
+        }
+      }
+      else this.findPath(this.state.snakeBody[this.state.snakeBody.length - 1], this.state.appleLocation, this.state.snakeBody.slice(0, this.state.snakeBody.length - 1))
+    }
+  }
+
   componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeys)
+    var options = [<label>Enable Walls<input type='checkbox' id='enableDisableWalls' onChange={this.handleButtons}/></label>]
+    var navBarElements = [new navBarElement("Auto Solve", 'button', this.autoSolve), new navBarElement("Options", 'select', options)]
+    this.props.setNavBarElements(navBarElements)
   }
 
   render() {
@@ -301,51 +283,61 @@ class SnakeGame extends React.Component {
     const gameStatus = this.state.gameStarted ? this.state.gamePaused ? <p className="gameResult">Press Enter<br />to resume.</p> : this.state.gameFinished ? <p className="gameResult">Game Over.<br />Press Enter<br />to start<br />again.</p> : <p className="gameResult">Press Escape<br />to pause.</p> : <p className="gameResult">Press Enter<br />to start.</p>
     return (
       <div className='boardDiv'>
-        <div className="info">
-          <div className='buttonDiv'>
-            <input id="enableDisableWalls" type="button" value={this.state.walls ? "Disable Walls" : "Enable Walls"} onClick={this.handleButtons} disabled={this.state.gameStarted && !this.state.gameFinished} style={this.state.gameStarted && !this.state.gameFinished ? { backgroundColor: 'rgb(150, 150, 150)' } : this.state.walls ? { backgroundColor: 'rgba(211, 39, 16, 0.3)' } : { backgroundColor: 'rgba(16, 149, 211, 0.3)' }} />
-            <br />
-            <input id="autoSolveButton" type="button" value="Auto-solve" onClick={this.handleButtons} />
-          </div>
+        <div className="infoDiv">
           <p style={{ color: "darkGreen" }}>Snake Length: {this.state.snakeBody.length} squares.</p>
           <p style={{ color: "darkRed" }}>Apples Caught: {this.state.applesCaught}</p>
           <p style={{ color: "darkOrange" }}>Speed: ~{Math.round(1000 / this.state.speed)} squares/sec.</p>
         </div>
-        {gameStatus}
         <div className="squaresDiv">
           {columns}
         </div>
+        {gameStatus}
       </div>
     );
   }
 }
 
-
 class Board extends React.Component {
   constructor() {
     super()
+    this.snakeGame = <SnakeGame setNavBarElements={this.setNavBarElements} />
+    this.pathFinding = <PathFinding setNavBarElements={this.setNavBarElements} />
     this.state = {
-      display: <SnakeGame />
+      display: this.snakeGame,
+      navBarElements: []
     }
     this.handleKeys = this.handleKeys.bind(this)
+    this.setNavBarElements = this.setNavBarElements.bind(this)
   }
+
   handleKeys(event) {
     if (event.key === "f") {
       this.setState({
-        display: <PathFinding />
+        display: this.pathFinding
       })
     } else if (event.key === "s") {
       this.setState({
-        display: <SnakeGame />
+        display: this.snakeGame
       })
     }
-
   }
+
   componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeys)
   }
+
+  setNavBarElements = (elements) => {
+    this.setState({
+      navBarElements: elements
+    })
+  }
+
   render() {
-    return (this.state.display);
+    return (
+      <WebTemplate title="Snake Game" navBarElements={this.state.navBarElements}>
+        {this.state.display}
+      </WebTemplate>
+    );
   }
 }
 

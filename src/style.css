@@ -7,8 +7,9 @@
     min-height: calc(100vh - 60px - 50px - 2px);
     width: 100%;
     display: flex;
-    justify-content: center;
+    justify-content:space-around;
     align-items: center;
+    flex-wrap: wrap;
 }
 
 .squaresDiv{
@@ -27,62 +28,23 @@
     padding: 0;
 }
 
-.info{
-    position: absolute;
-    top: 50%;
-    left: 0px;
-    transform: translate(3vw, -50%);
-    font-size: 24px;
+.infoDiv{
+    width: 25%;
+    font-size: clamp(18px, 1.6vw, 24px);
     font-family: 'Plaguard';
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.infoDiv > p{
+    white-space: nowrap;
 }
 
 .gameResult{
-    position: absolute;
-    top: 50%;
-    right: 0px;
-    transform: translate(-50%, -100%);
+    width: 25%;
     font-size: 32px;
     font-family: 'Plaguard';
     color: brown;
     text-align: center;
-}
-
-.buttonDiv{
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-#enableDisableWalls, #autoSolveButton{
-    color: black;
-    font-family: 'Plaguard';
-    font-size: 16px;
-    height: 40px;
-    width: 70%;
-    border: none;
-    box-shadow: 4px 4px 3px 3px rgba(0, 0, 0, 0.4);
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition-duration: 0.3s;
-}
-
-#enableDisableWalls:hover, #autoSolveButton:hover{
-    transition-duration: 0.3s;
-    box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.4);
-}
-
-#enableDisableWalls:disabled{
-    transition-duration: 0.3s;
-    box-shadow: None;
-    cursor: default;
-}
-
-#autoSolveButton {
-    margin-bottom: 30px;
-    background: red; /* For browsers that do not support gradients */
-    background: -webkit-linear-gradient(left, orange , yellow, green, cyan, blue, violet); /* For Safari 5.1 to 6.0 */
-    background: -o-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Opera 11.1 to 12.0 */
-    background: -moz-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Firefox 3.6 to 15 */
-    background: linear-gradient(to right, orange , yellow, green, cyan, blue, violet); /* Standard syntax (must be last) */
 }
