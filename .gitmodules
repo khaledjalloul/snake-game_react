@@ -1,0 +1,3 @@
+[submodule "src/website-template"]
+	path = src/website-template
+	url = https://github.com/khaledjalloul/website-template_react.git

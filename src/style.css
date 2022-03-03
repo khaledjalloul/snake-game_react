@@ -3,26 +3,24 @@
     src: local("Plaguard"), url(./fonts/Plaguard-ZVnjx.otf) format("truetype");
 }
 
-body{
-    margin-top: 5px;
-    margin-bottom: 5px;
-    background-color: rgba(23, 168, 59, 0.301);
+.boardDiv{
+    min-height: calc(100vh - 60px - 50px - 2px);
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
-.center{
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.squaresDiv{
     border: solid;
     border-color: black;
-    border-width:2px;
-    cursor: none;
+    border-width: 2px;
 }
+
 .square{
     border: solid;
     border-color: rgba(128, 128, 128, 0.1);
-    border-width:1px;
+    border-width: 1px;
     height: 3vh;
     width: 3vh;
     margin: 0;
@@ -30,17 +28,19 @@ body{
 }
 
 .info{
-    position: fixed;
+    position: absolute;
     top: 50%;
+    left: 0px;
     transform: translate(3vw, -50%);
     font-size: 24px;
     font-family: 'Plaguard';
 }
 
 .gameResult{
-    position: fixed;
+    position: absolute;
     top: 50%;
-    transform: translate(80vw, -100%);
+    right: 0px;
+    transform: translate(-50%, -100%);
     font-size: 32px;
     font-family: 'Plaguard';
     color: brown;
@@ -79,6 +79,7 @@ body{
 }
 
 #autoSolveButton {
+    margin-bottom: 30px;
     background: red; /* For browsers that do not support gradients */
     background: -webkit-linear-gradient(left, orange , yellow, green, cyan, blue, violet); /* For Safari 5.1 to 6.0 */
     background: -o-linear-gradient(right, orange, yellow, green, cyan, blue, violet); /* For Opera 11.1 to 12.0 */
