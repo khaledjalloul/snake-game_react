@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/snake-game_react/static/css/main.60c5cc8e.css",
+    "main.js": "/snake-game_react/static/js/main.7fa41fec.js",
+    "static/media/Helvetica.ttf": "/snake-game_react/static/media/Helvetica.06113bf748ae7dc33e05.ttf",
+    "static/media/Plaguard-ZVnjx.otf": "/snake-game_react/static/media/Plaguard-ZVnjx.9b0037f4c9739d196a67.otf",
+    "index.html": "/snake-game_react/index.html"
+  },
+  "entrypoints": [
+    "static/css/main.60c5cc8e.css",
+    "static/js/main.7fa41fec.js"
+  ]
+}
