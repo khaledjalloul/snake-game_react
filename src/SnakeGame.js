@@ -334,7 +334,7 @@ class Board extends React.Component {
 
   render() {
     return (
-      <WebTemplate title="Snake Game" navBarElements={this.state.navBarElements}>
+      <WebTemplate icon="/snake-game_react/favicon.ico" title="Snake Game" navBarElements={this.state.navBarElements}>
         {this.state.display}
       </WebTemplate>
     );
