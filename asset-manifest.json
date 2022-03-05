@@ -1,13 +1,13 @@
 {
   "files": {
-    "main.css": "/snake-game_react/static/css/main.86ce072d.css",
-    "main.js": "/snake-game_react/static/js/main.e947f291.js",
+    "main.css": "/snake-game_react/static/css/main.903015d1.css",
+    "main.js": "/snake-game_react/static/js/main.afb7fe67.js",
     "static/media/Helvetica.ttf": "/snake-game_react/static/media/Helvetica.06113bf748ae7dc33e05.ttf",
     "static/media/Plaguard-ZVnjx.otf": "/snake-game_react/static/media/Plaguard-ZVnjx.9b0037f4c9739d196a67.otf",
     "index.html": "/snake-game_react/index.html"
   },
   "entrypoints": [
-    "static/css/main.86ce072d.css",
-    "static/js/main.e947f291.js"
+    "static/css/main.903015d1.css",
+    "static/js/main.afb7fe67.js"
   ]
 }
