@@ -41,7 +41,6 @@ class SnakeGame extends React.Component {
       walls: false
     }
     this.handleKeys = this.handleKeys.bind(this)
-    this.handleButtons = this.handleButtons.bind(this)
     this.autoMovement = this.autoMovement.bind(this)
     this.findPath = this.findPath.bind(this)
     this.autoMoveSolver = this.autoMoveSolver.bind(this)
@@ -79,14 +78,6 @@ class SnakeGame extends React.Component {
     if (direction !== "No change" && (event.key === "ArrowUp" || event.key === "ArrowRight" || event.key === "ArrowDown" || event.key === "ArrowLeft")) {
       this.setState({
         direction: direction
-      })
-    }
-  }
-
-  handleButtons(event) {
-    if (event.target.id === "enableDisableWalls") {
-      this.setState({
-        walls: !this.state.walls
       })
     }
   }
@@ -265,12 +256,16 @@ class SnakeGame extends React.Component {
 
   componentDidMount() {
     document.body.addEventListener('keydown', this.handleKeys)
-    var options = [<label>Enable Walls<input type='checkbox' id='enableDisableWalls' onChange={this.handleButtons}/></label>]
-    var navBarElements = [new navBarElement("Auto Solve", 'button', this.autoSolve), new navBarElement("Options", 'select', options)]
-    this.props.setNavBarElements(navBarElements)
+    this.props.setNavBarElements(this.navBarElements)
   }
 
   render() {
+    var options = [
+      <label className='selectOptionsChild'>Enable Walls<input type='checkbox' onChange={e => this.setState({ walls: !this.state.walls })} /></label>,
+      <label className='selectOptionsChild'>Square Count<input type="number" value={this.state.squareCount} onChange={e => { this.setState({ squareCount: e.target.value }); setTimeout(() => this.props.setState({ navBarElements: this.navBarElements }), 10) }} /></label>
+    ]
+    this.navBarElements = [new navBarElement("Auto Solve", 'button', this.autoSolve), new navBarElement("Options", 'select', options)]
+
     var columns = []
     var rows = []
     for (var i = 0; i < this.state.squareCount; i++) {
@@ -300,10 +295,8 @@ class SnakeGame extends React.Component {
 class Board extends React.Component {
   constructor() {
     super()
-    this.snakeGame = <SnakeGame setNavBarElements={this.setNavBarElements} />
-    this.pathFinding = <PathFinding setNavBarElements={this.setNavBarElements} />
     this.state = {
-      display: this.snakeGame,
+      display: 'snakeGame',
       navBarElements: []
     }
     this.handleKeys = this.handleKeys.bind(this)
@@ -313,11 +306,11 @@ class Board extends React.Component {
   handleKeys(event) {
     if (event.key === "f") {
       this.setState({
-        display: this.pathFinding
+        display: 'pathFinding'
       })
     } else if (event.key === "s") {
       this.setState({
-        display: this.snakeGame
+        display: 'snakeGame'
       })
     }
   }
@@ -333,9 +326,12 @@ class Board extends React.Component {
   }
 
   render() {
+    this.pathFinding = <PathFinding setNavBarElements={this.setNavBarElements} />
+    this.snakeGame = <SnakeGame setNavBarElements={this.setNavBarElements} setState={state => this.setState(state)} handleChange={this.handleChange} squareCount={this.state.squareCount} />
+    var display = this.state.display === 'snakeGame' ? this.snakeGame : this.pathFinding
     return (
       <WebTemplate icon="/snake-game_react/favicon.ico" title="Snake Game" navBarElements={this.state.navBarElements}>
-        {this.state.display}
+        {display}
       </WebTemplate>
     );
   }
