@@ -17,7 +17,7 @@ class SnakeGame extends React.Component {
     this.initialState = {
       gameStarted: true,
       speed: 80,
-      appleLocation: new Coords(17, 14),
+      appleLocation: new Coords(9, 4),
       snakeBody: [new Coords(0, 0), new Coords(1, 0), new Coords(2, 0), new Coords(3, 0), new Coords(4, 0), new Coords(5, 0)],
       direction: "Right",
       applesCaught: 0,
@@ -30,7 +30,7 @@ class SnakeGame extends React.Component {
       squareCount: 25,
       gameStarted: false,
       speed: 80,
-      appleLocation: new Coords(17, 14),
+      appleLocation: new Coords(9, 4),
       snakeBody: [new Coords(0, 0), new Coords(1, 0), new Coords(2, 0), new Coords(3, 0), new Coords(4, 0), new Coords(5, 0)],
       direction: "Right",
       applesCaught: 0,

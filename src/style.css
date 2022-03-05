@@ -7,12 +7,13 @@
     min-height: calc(100vh - 60px - 50px);
     width: 100%;
     display: flex;
-    justify-content:space-around;
+    justify-content:center;
     align-items: center;
     flex-wrap: wrap;
 }
 
 .squaresDiv{
+    max-width: 90vw;
     border: solid;
     border-color: black;
     border-width: 2px;
@@ -30,19 +31,20 @@
 }
 
 .infoDiv{
-    width: 25%;
-    font-size: clamp(18px, 1.6vw, 24px);
-    font-family: 'Plaguard';
+    min-width: 350px;
+    margin-right: 3%;
     display: flex;
     flex-direction: column;
-    align-items: left;
-    padding-left: 5%;
+    align-items: center;
+    font-size: clamp(18px, 1.6vw, 24px);
+    font-family: 'Plaguard';
 }
 
 .gameResult{
-    width: 25%;
+    min-width: 350px;
+    margin-left: 3%;
+    text-align: center;
     font-size: 32px;
     font-family: 'Plaguard';
     color: brown;
-    text-align: center;
 }
