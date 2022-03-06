@@ -261,8 +261,8 @@ class SnakeGame extends React.Component {
 
   render() {
     var options = [
-      <label className='selectOptionsChild'>Enable Walls<input type='checkbox' onChange={e => this.setState({ walls: !this.state.walls })} /></label>,
-      <label id='lastOption' className='selectOptionsChild'>Square Count<input type="number" value={this.state.squareCount} onChange={e => { this.setState({ squareCount: e.target.value }); setTimeout(() => this.props.setNavBarElements(this.navBarElements), 10) }} /></label>
+      <label id='firstOption'>Enable Walls<input type='checkbox' onChange={e => this.setState({ walls: !this.state.walls })} /></label>,
+      <label id='lastOption'>Square Count<input type='number' value={this.state.squareCount} onChange={e => { this.setState({ squareCount: e.target.value }); setTimeout(() => this.props.setNavBarElements(this.navBarElements), 10) }} /></label>
     ]
     this.navBarElements = [new navBarElement("Auto Solve", 'button', this.autoSolve), new navBarElement("Options", 'select', options)]
 
