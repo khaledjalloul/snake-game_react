@@ -262,7 +262,7 @@ class SnakeGame extends React.Component {
   render() {
     var options = [
       <label className='selectOptionsChild'>Enable Walls<input type='checkbox' onChange={e => this.setState({ walls: !this.state.walls })} /></label>,
-      <label className='selectOptionsChild'>Square Count<input type="number" value={this.state.squareCount} onChange={e => { this.setState({ squareCount: e.target.value }); setTimeout(() => this.props.setState({ navBarElements: this.navBarElements }), 10) }} /></label>
+      <label id='lastOption' className='selectOptionsChild'>Square Count<input type="number" value={this.state.squareCount} onChange={e => { this.setState({ squareCount: e.target.value }); setTimeout(() => this.props.setNavBarElements(this.navBarElements), 10) }} /></label>
     ]
     this.navBarElements = [new navBarElement("Auto Solve", 'button', this.autoSolve), new navBarElement("Options", 'select', options)]
 
@@ -327,7 +327,7 @@ class Board extends React.Component {
 
   render() {
     this.pathFinding = <PathFinding setNavBarElements={this.setNavBarElements} />
-    this.snakeGame = <SnakeGame setNavBarElements={this.setNavBarElements} setState={state => this.setState(state)} handleChange={this.handleChange} squareCount={this.state.squareCount} />
+    this.snakeGame = <SnakeGame setNavBarElements={this.setNavBarElements} />
     var display = this.state.display === 'snakeGame' ? this.snakeGame : this.pathFinding
     return (
       <WebTemplate icon="/snake-game_react/favicon.ico" title="Snake Game" navBarElements={this.state.navBarElements}>
