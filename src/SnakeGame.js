@@ -330,7 +330,7 @@ class Board extends React.Component {
     this.snakeGame = <SnakeGame setNavBarElements={this.setNavBarElements} />
     var display = this.state.display === 'snakeGame' ? this.snakeGame : this.pathFinding
     return (
-      <WebTemplate icon="/snake-game_react/favicon.ico" title="Snake Game" navBarElements={this.state.navBarElements}>
+      <WebTemplate icon="/snake-game_react/favicon.ico" title="Snake Game" navBarElements={this.state.navBarElements} gitLink='snake-game_react'>
         {display}
       </WebTemplate>
     );
