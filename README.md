@@ -1,6 +1,8 @@
 # ReactJS Snake Game
 
-The classic snake game recreated in ReactJS.
+The classic snake game recreated in ReactJS with an autosolve feature.
+
+## Features
 
 ### Custom Square Count
 
@@ -12,8 +14,8 @@ Play the game either with collision walls or let the snake pass through the wall
 
 ### Auto Solver
 
-Click 'Auto Solve' to let the snake find the apple on its own using the A* path finding algorithm.
+Click 'Auto Solve' to let the snake find the apple on its own using the **A\* path finding** algorithm.
 
-### Demo
+## Demo
 
-Play the game yourself on [this link](https://khaledjalloul.github.io/snake-game_react) hosted by Github Pages.
+A demo of the game is available online on Github Pages using [this link](https://khaledjalloul.github.io/snake-game_react).
